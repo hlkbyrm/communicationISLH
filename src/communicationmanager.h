@@ -21,6 +21,7 @@ public:
     // Connection request to the given address and port
     void connectToHost(QString hostAddress, quint16 port);
 
+    /*
     // Handle messages from Navigation ISL
     void handleNavigationISLInfo(communicationISLH::robotInfo msg);
 
@@ -31,6 +32,9 @@ public:
     void handleNetworkUpdateFromCoordinator(communicationISLH::networkInfo info);
 
     void handleHotspotHandlerMessageOut(communicationISLH::helpMessage msg);
+*/
+
+    void handleMessageOut(communicationISLH::helpMessage msg);
 
     bool readConfigFile(QString filename);
 
@@ -74,7 +78,7 @@ private slots:
 
     void connectToRobots();
 
-    void handleNetworkInfo(QStringList list);
+   // void handleNetworkInfo(QStringList list);
 
 
 };

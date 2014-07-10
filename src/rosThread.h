@@ -38,9 +38,10 @@ private:
 
      ros::NodeHandle n;
 
-     ros::Subscriber robotInfoSubscriber;
-
      ros::Publisher neighborInfoPublisher;
+
+     /*
+     ros::Subscriber robotInfoSubscriber;
 
      // Publish the received coordinator Update to the coordinator
      ros::Publisher coordinatorUpdatePublisher;
@@ -54,8 +55,11 @@ private:
      ros::Subscriber networkUpdateSubscriber;
 
      ros::Subscriber hotspotHandlerMessageOutSubscriber;
+*/
 
+   ros::Publisher messageInPublisher;
 
+   ros::Subscriber messageOutSubscriber;
 
 
 public slots:

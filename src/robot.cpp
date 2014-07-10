@@ -8,7 +8,7 @@ Robot::Robot(QObject *parent) :
     incomingConnected = false;
     outgoingConnected = false;
 
-    coordinator = false;
+    //coordinator = false;
 }
 communicationISLH::robotInfo Robot::getRobotInfo(){
 
@@ -95,6 +95,7 @@ void Robot::sendRobotInfo(communicationISLH::robotInfo info)
         file.close();
     }
 }
+/*
 bool Robot::isCoordinator()
 {
     return coordinator;
@@ -103,6 +104,7 @@ void Robot::setCoordinator(bool status)
 {
     coordinator = status;
 }
+*/
 void Robot::sendNetworkInfo(QStringList info)
 {
     if(this->outgoingConnected)
@@ -127,6 +129,7 @@ void Robot::getClientDisconnected(int type)
         this->outgoingclient->deleteLater();
     }
 }
+/*
 void Robot::receiveRobotInfo(communicationISLH::robotInfo info)
 {
     this->info = info;
@@ -176,6 +179,7 @@ void Robot::receiveRobotInfo(communicationISLH::robotInfo info)
     file.close();
 
 }
+/*
 // Receive coordinator update from the client robot
 void Robot::receiveCoordinatorUpdate(communicationISLH::neighborInfo info)
 {
@@ -238,13 +242,14 @@ void Robot::receiveNetworkInfoFromCoordinator(QStringList list)
     emit networkInfo(tempList);
 
 }
-void Robot::sendOutgoingHotspotMessage(communicationISLH::helpMessage msg)
+*/
+void Robot::sendOutgoingMessage(communicationISLH::helpMessage msg)
 {
     if(this->isOutgoingConnected())
-        this->outgoingclient->sendHotspotOutgoingMessage(msg);
+        this->outgoingclient->sendOutgoingMessage(msg);
 
 }
-void Robot::receiveHotspotMessage(QStringList list)
+void Robot::receiveMessage(QStringList list)
 {
         communicationISLH::helpMessage msg;
 
@@ -260,5 +265,5 @@ void Robot::receiveHotspotMessage(QStringList list)
 
         CommunicationManager* manager = (CommunicationManager*)this->parent();
 
-        manager->rosthread->hotspotHandlerMessageInPublisher.publish(msg);
+        manager->rosthread->messageInPublisher.publish(msg);
 }

@@ -36,19 +36,19 @@ Client::Client(QTcpSocket* sock, int clientType, QObject* parent):QObject(parent
 
 	connect(socket,SIGNAL(readyRead()),this,SLOT(receiveData()));
 
-	connect(this,SIGNAL(incomingHotspotMessage(QStringList)),this->parent(),SLOT(receiveHotspotMessage(QStringList)));
+    connect(this,SIGNAL(incomingMessage(QStringList)),this->parent(),SLOT(receiveMessage(QStringList)));
 
 	connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(displaySocketError(QAbstractSocket::SocketError)));
 
     //connect(this,SIGNAL(imageReceived(QImage)), TcpComm, SLOT(getClientImageReceived(QImage)));
 
     // When neighbor info is received, notify the parent
-    connect(this,SIGNAL(neighborInfo(navigationISL::robotInfo)),this->parent(),SLOT(receiveRobotInfo(navigationISL::robotInfo)));
+    //connect(this,SIGNAL(neighborInfo(communicationISLH::robotInfo)),this->parent(),SLOT(receiveRobotInfo(communicationISLH::robotInfo)));
 
     // When coordinator update is received notify the parent
-    connect(this,SIGNAL(coordinatorUpdate(navigationISL::neighborInfo)),this->parent(),SLOT(receiveCoordinatorUpdate(navigationISL::neighborInfo)));
+    //connect(this,SIGNAL(coordinatorUpdate(communicationISLH::neighborInfo)),this->parent(),SLOT(receiveCoordinatorUpdate(communicationISLH::neighborInfo)));
 
-    connect(this, SIGNAL(networkInfo(QStringList)),this->parent(),SLOT(receiveNetworkInfoFromCoordinator(QStringList)));
+    //connect(this, SIGNAL(networkInfo(QStringList)),this->parent(),SLOT(receiveNetworkInfoFromCoordinator(QStringList)));
     clientSocketError = QAbstractSocket::UnknownSocketError; // initially no error
 
 	speedCounter = 0;
@@ -167,7 +167,7 @@ void Client::receiveData(){
             myRecData = list.at(list.size()-1);
 
             // Handle data
-            this->handleTask(task,1);
+            //this->handleTask(task,1);
 
             myRecData.clear();
 
@@ -184,6 +184,7 @@ void Client::sendData(QByteArray data){
    // socket->waitForBytesWritten(500);
 
 }
+/*
 void Client::handleTask(int task , int dataSize){
 
     switch(task)
@@ -194,12 +195,12 @@ void Client::handleTask(int task , int dataSize){
     case RECV_HOST_NAME:
         receiveHostName();
         break;
-   /* case RECV_IMAGE:
+    case RECV_IMAGE:
         receiveImage();
         break;
     case RECV_IMAGE_DSIZE:
         receiveImageDataSize();
-        break; */
+        break;
     case RECV_ROBOT_INFO:
         receiveRobotInfoFromNeighbor();
         break;
@@ -210,16 +211,17 @@ void Client::handleTask(int task , int dataSize){
         receiveNetworkInfo();
         break;
     case RECV_HELP_REQUEST:
-        receiveHotspotMessage();
+        receiveMessage();
         break;
     case SEND_HELP_RESPONSE:
-        receiveHotspotMessage();
+        receiveMessage();
         break;
     default:
         break;
     }
 
 }
+*/
 void Client::getSocketDisconnected()
 {
 
@@ -360,13 +362,13 @@ void Client::receiveNetworkInfo()
     }
 
 }
-void Client::receiveHotspotMessage()
+void Client::receiveMessage()
 {
     QStringList list = myRecData.split(";",QString::SkipEmptyParts);
 
     qDebug()<<list;    
 
-    emit incomingHotspotMessage(list);
+    emit incomingMessage(list);
 }
 void Client::receiveRobotInfoFromNeighbor()
 {
@@ -578,7 +580,7 @@ void Client::receiveAcknowledge(){
 
 //	emit(acknowledgeReceived(id));
 }
-void Client::sendHotspotOutgoingMessage(communicationISLH::helpMessage msg)
+void Client::sendOutgoingMessage(communicationISLH::helpMessage msg)
 {
     QByteArray data;
 

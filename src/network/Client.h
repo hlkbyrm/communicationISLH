@@ -80,9 +80,9 @@ public:
     void receiveRobotInfoFromNeighbor();
 
     // Send incoming hotspot related message to outgoing client
-    void sendHotspotOutgoingMessage(communicationISLH::helpMessage msg);
+    void sendOutgoingMessage(communicationISLH::helpMessage msg);
 
-    void receiveHotspotMessage();
+    void receiveMessage();
 
 	void receiveSPCounter(bool respond);
 
@@ -170,5 +170,5 @@ private:
         void neighborInfo(communicationISLH::robotInfo info);
         void coordinatorUpdate(communicationISLH::neighborInfo info);
         void networkInfo(QStringList list);
-        void incomingHotspotMessage(QStringList list);
+        void incomingMessage(QStringList list);
 };

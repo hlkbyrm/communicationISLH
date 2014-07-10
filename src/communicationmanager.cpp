@@ -47,7 +47,7 @@ bool CommunicationManager::readConfigFile(QString filename)
         // qDebug()<<result["numrobots"].toString();
 
         int numrobots = result["numrobots"].toInt();
-        int iscoord =   result["iscoordinator"].toInt();
+      //  int iscoord =   result["iscoordinator"].toInt();
         int robotID =   result["robotID"].toInt();
 
         QString temp = QString::number(robotID);
@@ -58,7 +58,7 @@ bool CommunicationManager::readConfigFile(QString filename)
 
         myrobot->setName(temp2);
 
-        if(iscoord == 1) myrobot->setCoordinator(true);
+       // if(iscoord == 1) myrobot->setCoordinator(true);
 
 
 
@@ -78,15 +78,16 @@ bool CommunicationManager::readConfigFile(QString filename)
 
             robot->setName(plugin.toMap()["name"].toString());
 
-            int coord = plugin.toMap()["coordinator"].toInt();
+            //int coord = plugin.toMap()["coordinator"].toInt();
 
-            if(coord == 1) robot->setCoordinator(true);
+            //if(coord == 1) robot->setCoordinator(true);
 
+            /*
             if(robot->isCoordinator())
             {
                 connect(robot,SIGNAL(networkInfo(QStringList)),this,SLOT(handleNetworkInfo(QStringList)));
             }
-
+*/
 
             this->robots[count] = robot;
 
@@ -213,6 +214,78 @@ void CommunicationManager::getClientDisconnected(int type)
     }
 
 }
+
+bool CommunicationManager::initializeNetwork()
+{
+
+    // Read config file
+    QString path = QDir::homePath();
+    path.append("/catkin_ws/src/configISL.json");
+    if(!this->readConfigFile(path)) return false;
+
+    // Initialize TCP server
+    this->TcpComm = new tcpComm(this);
+
+    // Start listening incoming connections
+    this->TcpComm->myServer->setupServer();
+
+    // Direct incoming connections to the slot
+    QObject::connect(this->TcpComm->myServer,SIGNAL(newCommRequest(QTcpSocket*)),this,SLOT(handleNewCommRequest(QTcpSocket*)));
+
+    // If I am the coordinator I should connect to other robots
+    //if(myrobot->isCoordinator())
+    //{
+        this->connectToRobots();
+
+        neighbors.clear();
+
+    //}
+    // After 5 seconds start to connect with other robots
+    // QTimer::singleShot(5000,this,SLOT(connectToRobots()));
+
+    return true;
+
+}
+void CommunicationManager::connectToRobots()
+{
+
+    // Connect to each robot in the list
+    for(int i = 0; i < this->robots.size(); i++)
+    {
+
+        this->connectToHost(robots.at(i)->getIP(),1200);
+
+    }
+
+}
+
+void CommunicationManager::handleMessageOut(communicationISLH::helpMessage msg)
+{
+
+    communicationISLH::helpMessage ms = msg;
+
+    QString str = "IRobot";
+
+    str.append(QString::number(msg.robotid));
+
+    qDebug()<<"The outgoing hotspot message robot name "<<str;
+
+    for(int i = 0; i < robots.size(); i++ )
+    {
+
+        if(str == robots.at(i)->getName())
+        {
+
+            robots.at(i)->sendOutgoingMessage(ms);
+
+        }
+    }
+
+
+}
+
+/*
+
 // Send the information to the coordinator
 void CommunicationManager::handleCoordinatorUpdate(communicationISLH::robotInfo info)
 {
@@ -306,6 +379,7 @@ void CommunicationManager::handleNavigationISLInfo(communicationISLH::robotInfo 
     }
 
 }
+*/
 void CommunicationManager::handleNewCommRequest(QTcpSocket *socket)
 {
     for(int i = 0; i < robots.size(); i++){
@@ -318,11 +392,13 @@ void CommunicationManager::handleNewCommRequest(QTcpSocket *socket)
 
             robots.at(i)->setIncomingConnected(true);
 
+            /*
             if(myrobot->isCoordinator())
             {
                 //  connect(robots.at(i)->incomingclient,SIGNAL(coordinatorUpdate(navigationISL::robotInfo)), this,SLOT(handleCoordinatorInfo));
 
             }
+            */
 
             qDebug()<<"A new connection";
 
@@ -336,6 +412,7 @@ void CommunicationManager::handleNewCommRequest(QTcpSocket *socket)
     // socket->deleteLater();
 
 }
+/*
 // Decode the network matrix received from coordinator
 void CommunicationManager::handleNetworkUpdateFromCoordinator(communicationISLH::networkInfo info)
 {
@@ -473,49 +550,8 @@ void CommunicationManager::handleNetworkUpdateFromCoordinator(communicationISLH:
 
 
 }
-bool CommunicationManager::initializeNetwork()
-{
 
-    // Read config file
-    QString path = QDir::homePath();
-    path.append("/fuerte_workspace/sandbox/configISL.json");
-    if(!this->readConfigFile(path)) return false;
 
-    // Initialize TCP server
-    this->TcpComm = new tcpComm(this);
-
-    // Start listening incoming connections
-    this->TcpComm->myServer->setupServer();
-
-    // Direct incoming connections to the slot
-    QObject::connect(this->TcpComm->myServer,SIGNAL(newCommRequest(QTcpSocket*)),this,SLOT(handleNewCommRequest(QTcpSocket*)));
-
-    // If I am the coordinator I should connect to other robots
-    //if(myrobot->isCoordinator())
-    //{
-        this->connectToRobots();
-
-        neighbors.clear();
-
-    //}
-    // After 5 seconds start to connect with other robots
-    // QTimer::singleShot(5000,this,SLOT(connectToRobots()));
-
-    return true;
-
-}
-void CommunicationManager::connectToRobots()
-{
-
-    // Connect to each robot in the list
-    for(int i = 0; i < this->robots.size(); i++)
-    {
-
-        this->connectToHost(robots.at(i)->getIP(),1200);
-
-    }
-
-}
 // Handle the new network info from coordinator
 void CommunicationManager::handleNetworkInfo(QStringList list)
 {
@@ -607,3 +643,4 @@ void CommunicationManager::handleHotspotHandlerMessageOut(communicationISLH::hel
 
 }
 
+*/

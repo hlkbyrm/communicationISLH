@@ -8,7 +8,7 @@
 int main(int argc,char** argv)
 {
 
-    ros::init(argc,argv,"communicationISL");
+    ros::init(argc,argv,"communicationISLH");
 
     QApplication app(argc,argv);
 

@@ -20,7 +20,7 @@ public:
 
     void sendNetworkInfo(QStringList info);
 
-    void sendOutgoingHotspotMessage(communicationISLH::helpMessage msg);
+    void sendOutgoingMessage(communicationISLH::helpMessage msg);
 
     communicationISLH::robotInfo getRobotInfo();
 
@@ -46,9 +46,9 @@ public:
 
     void sendRobotInfo(communicationISLH::robotInfo info);
 
-    bool isCoordinator();
+    //bool isCoordinator();
 
-    void setCoordinator(bool status);
+    //void setCoordinator(bool status);
 private:
 
     communicationISLH::robotInfo info;
@@ -75,14 +75,14 @@ public slots:
     void getClientDisconnected(int type);
 
     // Receive robot info from a neighbor
-    void receiveRobotInfo(communicationISLH::robotInfo info);
+    //void receiveRobotInfo(communicationISLH::robotInfo info);
 
     // Receive a coordinator update info from a robot
-    void receiveCoordinatorUpdate(communicationISLH::neighborInfo info);
+    //void receiveCoordinatorUpdate(communicationISLH::neighborInfo info);
 
-    void receiveNetworkInfoFromCoordinator(QStringList list);
+    //void receiveNetworkInfoFromCoordinator(QStringList list);
 
-    void receiveHotspotMessage(QStringList list);
+    void receiveMessage(QStringList list);
     
 };
 
