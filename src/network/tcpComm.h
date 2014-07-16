@@ -3,8 +3,8 @@
 #include "Client.h"
 #include <QtCore/QString>
 #include <QList>
-#define MAX_INCOMING_CLIENT_NUM 4
-#define MAX_OUTGOING_CLIENT_NUM 4
+#define MAX_INCOMING_CLIENT_NUM 1
+#define MAX_OUTGOING_CLIENT_NUM 1
 
 class robot;
 class tcpComm : public QObject
