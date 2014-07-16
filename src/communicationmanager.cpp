@@ -235,7 +235,7 @@ bool CommunicationManager::initializeNetwork()
     // If I am the coordinator I should connect to other robots
     //if(myrobot->isCoordinator())
     //{
-        this->connectToRobots();
+        //this->connectToRobots();
 
         neighbors.clear();
 
@@ -382,7 +382,8 @@ void CommunicationManager::handleNavigationISLInfo(communicationISLH::robotInfo 
 */
 void CommunicationManager::handleNewCommRequest(QTcpSocket *socket)
 {
-    for(int i = 0; i < robots.size(); i++){
+    int i;
+    for( i = 0; i < robots.size(); i++){
 
         if(robots.at(i)->getIP() == socket->peerAddress().toString()){
 
@@ -403,12 +404,18 @@ void CommunicationManager::handleNewCommRequest(QTcpSocket *socket)
             qDebug()<<"A new connection";
 
 
-
+            if (robots.at(i)->isOutgoingConnected()==false)
+            {
+                this->connectToHost(robots.at(i)->getIP(),1200);
+            }
             return;
         }
     }
 
     socket->abort();
+
+
+
     // socket->deleteLater();
 
 }
