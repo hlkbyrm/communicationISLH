@@ -21,6 +21,11 @@ public:
     // Connection request to the given address and port
     void connectToHost(QString hostAddress, quint16 port);
 
+    // Connection request to the given address and port - wait until connected
+    void connectToHostWithWait(QString hostAddress, quint16 port);
+
+    void delay(int duration);
+
     /*
     // Handle messages from Navigation ISL
     void handleNavigationISLInfo(communicationISLH::robotInfo msg);

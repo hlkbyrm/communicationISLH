@@ -113,6 +113,68 @@ void CommunicationManager::connecttt(){
     //  QTimer::singleShot(2000,this,SLOT(connecttt()));
 
 }
+void CommunicationManager::connectToHostWithWait(QString hostAddress, quint16 port)
+{
+    Client* cl = new Client(OUTGOING_CLIENT,this);
+
+
+    cl->setIP(hostAddress);
+
+    while(1)
+    {
+        cl->socket->connectToHost(hostAddress,port);
+
+        if(cl->socket->waitForConnected(5000)){
+
+            for(int i = 0; i < robots.size() ; i++){
+
+                //  qDebug()<<robots[i]->getIP();
+
+                //  qDebug()<<tempClient->getClientIP();
+
+                if(robots[i]->getIP() == cl->getIP())
+                {
+                    QObject::disconnect(cl,SIGNAL(clientDisconnected(int)),this,SLOT(getClientDisconnected(int)));
+
+                    cl->setParent(robots[i]);
+
+                    connect(cl, SIGNAL(clientDisconnected(int)),robots[i], SLOT(getClientDisconnected(int)));
+
+                    robots[i]->setOutgoingClient(cl);
+
+                    robots[i]->setOutGoingConnected(true);
+
+                    qDebug()<<"Outgoing connected : "<<robots[i]->getIP();
+
+                    //tempClient=0;
+                    //tempClient->deleteLater();
+
+                    return;
+                }
+            }
+
+        }
+        this->delay(1);
+    }
+/*    else
+    {
+
+        qDebug()<<"Error timeout";
+
+        for(int i = 0; i < robots.size() ; i++){
+
+            if(robots[i]->getIP() == cl->getIP())
+            {
+
+                robots[i]->setOutGoingConnected(false);
+                break;
+
+            }
+        }
+
+    }
+*/
+}
 void CommunicationManager::connectToHost(QString hostAddress, quint16 port)
 {
     Client* cl = new Client(OUTGOING_CLIENT,this);
@@ -214,7 +276,12 @@ void CommunicationManager::getClientDisconnected(int type)
     }
 
 }
-
+void CommunicationManager::delay(int duration)
+{
+    QTime dieTime= QTime::currentTime().addSecs(duration);
+    while( QTime::currentTime() < dieTime )
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+}
 bool CommunicationManager::initializeNetwork()
 {
 
@@ -239,6 +306,10 @@ bool CommunicationManager::initializeNetwork()
 
         neighbors.clear();
 
+        this->delay(5);
+
+        this->connectToRobots();
+
     //}
     // After 5 seconds start to connect with other robots
     // QTimer::singleShot(5000,this,SLOT(connectToRobots()));
@@ -253,7 +324,9 @@ void CommunicationManager::connectToRobots()
     for(int i = 0; i < this->robots.size(); i++)
     {
 
-        this->connectToHost(robots.at(i)->getIP(),1200);
+        //this->connectToHost(robots.at(i)->getIP(),1200);
+
+        this->connectToHostWithWait(robots.at(i)->getIP(),1200);
 
     }
 
@@ -404,10 +477,12 @@ void CommunicationManager::handleNewCommRequest(QTcpSocket *socket)
             qDebug()<<"A new connection";
 
 
+            /*
             if (robots.at(i)->isOutgoingConnected()==false)
             {
                 this->connectToHost(robots.at(i)->getIP(),1200);
             }
+            */
             return;
         }
     }
