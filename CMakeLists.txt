@@ -68,11 +68,8 @@ QT4_WRAP_CPP(QT_MOC_HPP ${QT_HEADERS})
 add_message_files(
   DIRECTORY msg 
   FILES
-  taskInfo.msg
-  neighborInfo.msg
-  robotInfo.msg
-  networkInfo.msg
-  helpMessage.msg
+  inMessage.msg
+  outMessage.msg
 )
 generate_messages(DEPENDENCIES std_msgs)
 

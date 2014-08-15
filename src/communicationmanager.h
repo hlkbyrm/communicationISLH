@@ -5,9 +5,8 @@
 #include "network/tcpComm.h"
 #include "robot.h"
 #include <QObject>
-#include <communicationISLH/robotInfo.h>
-#include <communicationISLH/networkInfo.h>
-#include <communicationISLH/helpMessage.h>
+#include <communicationISLH/inMessage.h>
+#include <communicationISLH/outMessage.h>
 #include <QXmlStreamReader>
 
 class RosThread;
@@ -39,7 +38,7 @@ public:
     void handleHotspotHandlerMessageOut(communicationISLH::helpMessage msg);
 */
 
-    void handleMessageOut(communicationISLH::helpMessage msg);
+    void handleMessageOut(communicationISLH::outMessage msg);
 
     bool readConfigFile(QString filename);
 

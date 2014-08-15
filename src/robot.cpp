@@ -10,6 +10,7 @@ Robot::Robot(QObject *parent) :
 
     //coordinator = false;
 }
+/*
 communicationISLH::robotInfo Robot::getRobotInfo(){
 
     return this->info;
@@ -19,6 +20,7 @@ void Robot::setRobotInfo(communicationISLH::robotInfo info){
 
     this->info = info;
 }
+*/
 void Robot::setName(QString nam){
 
     this->name = nam;
@@ -61,57 +63,7 @@ void Robot::setIncomingConnected(bool status){
 
     incomingConnected = status;
 }
-void Robot::sendRobotInfo(communicationISLH::robotInfo info)
-{
 
-    if(outgoingConnected)
-    {
-        this->outgoingclient->sendRobotInfotoNeighbor(info);
-
-        QString fileName = QDir::homePath();
-        fileName.append("/fuerte_workspace/sandbox/toRobot.txt");
-
-        QFile file(fileName);
-
-        if(!file.exists())
-        {
-            file.open(QFile::WriteOnly);
-        }
-        else
-        {
-            file.open(QFile::Append);
-
-        }
-        QTextStream stream(&file);
-
-        QString str = this->name;
-
-        str.remove("IRobot");
-
-        int val = Client::RECV_ROBOT_INFO;
-
-        stream << QDateTime::currentDateTime().toTime_t()<<" "<<" "<<val<<" "<<info.posX<<" "<<info.posY<<" "<<info.radius<<" "<<str<<"\n";
-
-        file.close();
-    }
-}
-/*
-bool Robot::isCoordinator()
-{
-    return coordinator;
-}
-void Robot::setCoordinator(bool status)
-{
-    coordinator = status;
-}
-*/
-void Robot::sendNetworkInfo(QStringList info)
-{
-    if(this->outgoingConnected)
-    {
-        this->outgoingclient->sendNetworkInfo(info);
-    }
-}
 void Robot::getClientDisconnected(int type)
 {
     qDebug()<<"Robot "<<this->name<<" client "<<type<<" disconnected"<<"name "<<name;
@@ -129,129 +81,16 @@ void Robot::getClientDisconnected(int type)
         this->outgoingclient->deleteLater();
     }
 }
-/*
-void Robot::receiveRobotInfo(communicationISLH::robotInfo info)
-{
-    this->info = info;
 
-    communicationISLH::neighborInfo ninfo;
-
-    ninfo.name = this->name.toStdString();
-
-    ninfo.posX = this->info.posX;
-
-    ninfo.posY = this->info.posY;
-
-    ninfo.radius = this->info.radius;
-
-    ninfo.targetX = this->info.targetX;
-
-    ninfo.targetY = this->info.targetY;
-
-    CommunicationManager* manager = (CommunicationManager*)this->parent();
-
-    manager->rosthread->neighborInfoPublisher.publish(ninfo);
-
-    QString fileName = QDir::homePath();
-    fileName.append("/fuerte_workspace/sandbox/fromRobot.txt");
-
-    QFile file(fileName);
-
-    if(!file.exists())
-    {
-        file.open(QFile::WriteOnly);
-    }
-    else
-    {
-        file.open(QFile::Append);
-
-    }
-    QTextStream stream(&file);
-
-    QString str = this->name;
-
-    str.remove("IRobot");
-
-    int val = Client::RECV_ROBOT_INFO;
-
-    stream << QDateTime::currentDateTime().toTime_t()<<" "<<" "<<val<<" "<<info.posX<<" "<<info.posY<<" "<<info.radius<<" "<<str<<"\n";
-
-    file.close();
-
-}
-/*
-// Receive coordinator update from the client robot
-void Robot::receiveCoordinatorUpdate(communicationISLH::neighborInfo info)
-{
-
-
-    info.name = name.toStdString();
-
-    qDebug()<<QString::fromStdString(info.name)<<info.posX<<info.posY;
-
-    CommunicationManager* manager = (CommunicationManager*)this->parent();
-
-    manager->rosthread->coordinatorUpdatePublisher.publish(info);
-
-    qDebug()<<"Received a coordinator update";
-
-    QString fileName = QDir::homePath();
-    fileName.append("/fuerte_workspace/sandbox/CoordinatorReceivedUpdate.txt");
-
-    QFile file(fileName);
-
-    if(!file.exists())
-    {
-        file.open(QFile::WriteOnly);
-    }
-    else
-    {
-        file.open(QFile::Append);
-
-    }
-    QTextStream stream(&file);
-
-    QString str = this->name;
-
-    str.remove("IRobot");
-
-    int val = Client::RECV_COORDINATOR_UPDATE;
-
-    stream << QDateTime::currentDateTime().toTime_t()<<" "<<" "<<val<<" "<<info.posX<<" "<<info.posY<<" "<<str<<"\n";
-
-    file.close();
-
-}
-void Robot::sendCoordinatorUpdatetoCoordinator(communicationISLH::neighborInfo info)
+void Robot::sendOutgoingMessage(communicationISLH::outMessage msg, int msgIndx)
 {
     if(this->isOutgoingConnected())
-        this->outgoingclient->sendCoordinatorUpdatetoCoordinator(info);
-
-
-
+        this->outgoingclient->sendOutgoingMessage(msg, msgIndx);
 
 }
-void Robot::receiveNetworkInfoFromCoordinator(QStringList list)
+void Robot::receiveMessage(QString message)
 {
-
-  //  CommunicationManager* manager = (CommunicationManager*)this->parent();
-
-    qDebug()<<"Here i am";
-    QStringList tempList = list;
-
-    emit networkInfo(tempList);
-
-}
-*/
-void Robot::sendOutgoingMessage(communicationISLH::helpMessage msg)
-{
-    if(this->isOutgoingConnected())
-        this->outgoingclient->sendOutgoingMessage(msg);
-
-}
-void Robot::receiveMessage(QStringList list)
-{
-        communicationISLH::helpMessage msg;
+        communicationISLH::inMessage msg;
 
         QString name = this->getName();
 
@@ -261,7 +100,7 @@ void Robot::receiveMessage(QStringList list)
 
         msg.robotid = id;
 
-        msg.messageid = list.at(0).toInt();
+        msg.message = message.toStdString();
 
         CommunicationManager* manager = (CommunicationManager*)this->parent();
 

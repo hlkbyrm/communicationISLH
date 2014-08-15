@@ -2,9 +2,9 @@
 #include <QThread>
 #include <QObject>
 #include <ros/ros.h>
-#include "communicationISLH/robotInfo.h"
-#include <communicationISLH/networkInfo.h>
-#include <communicationISLH/helpMessage.h>
+//#include "communicationISLH/robotInfo.h"
+//#include <communicationISLH/networkInfo.h>
+//#include <communicationISLH/helpMessage.h>
 #include "communicationmanager.h"
 #include <QTimer>
 

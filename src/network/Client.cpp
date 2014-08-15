@@ -1,6 +1,6 @@
 #include "Client.h"
 #include "tcpComm.h"
-#include <opencv2/opencv.hpp>
+//#include <opencv2/opencv.hpp>
 #include <QtGui/QMessageBox>
 #include <QtNetwork/QHostInfo>
 #include <QtCore/QString>
@@ -24,31 +24,18 @@ Client::Client(QTcpSocket* sock, int clientType, QObject* parent):QObject(parent
 
 	type = clientType;
 
-    //add = socket->peerAddress();
-
     IP = socket->peerAddress().toString(); // get IP
 
     connect(socket, SIGNAL(disconnected()), this, SLOT(getSocketDisconnected()));
 
     connect(this, SIGNAL(clientDisconnected(int)),this->parent(), SLOT(getClientDisconnected(int)));
 
-    //connect(socket, SIGNAL(disconnected()), socket, SLOT(deleteLater()));
-
 	connect(socket,SIGNAL(readyRead()),this,SLOT(receiveData()));
 
-    connect(this,SIGNAL(incomingMessage(QStringList)),this->parent(),SLOT(receiveMessage(QStringList)));
+    connect(this,SIGNAL(incomingMessage(QString)),this->parent(),SLOT(receiveMessage(QString)));
 
 	connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(displaySocketError(QAbstractSocket::SocketError)));
 
-    //connect(this,SIGNAL(imageReceived(QImage)), TcpComm, SLOT(getClientImageReceived(QImage)));
-
-    // When neighbor info is received, notify the parent
-    //connect(this,SIGNAL(neighborInfo(communicationISLH::robotInfo)),this->parent(),SLOT(receiveRobotInfo(communicationISLH::robotInfo)));
-
-    // When coordinator update is received notify the parent
-    //connect(this,SIGNAL(coordinatorUpdate(communicationISLH::neighborInfo)),this->parent(),SLOT(receiveCoordinatorUpdate(communicationISLH::neighborInfo)));
-
-    //connect(this, SIGNAL(networkInfo(QStringList)),this->parent(),SLOT(receiveNetworkInfoFromCoordinator(QStringList)));
     clientSocketError = QAbstractSocket::UnknownSocketError; // initially no error
 
 	speedCounter = 0;
@@ -86,37 +73,7 @@ Client::~Client()
 
 
 }
-QByteArray Client::makeDataPackage(int task, int dataSize, QByteArray data)
-{
 
-    QByteArray package;
-
-    QString str;
-
-    str = "AA";
-
-    package.append(str); // control byte
-
-    package.append(",");
-
-    str.setNum(task);
-
-    package.append(str); //task
-
-    package.append(",");
-
-    str.setNum(dataSize);
-
-    package.append(str);
-
-    package.append(",");
-
-    package.append(data); //data
-
-    return package;
-
-
-}
 void Client::receiveData(){
 	
     // Read the buffer;
@@ -125,16 +82,28 @@ void Client::receiveData(){
     // Convert to QString
     myRecData = QString::fromAscii(myRecDataBA);
 
+    // check package consistency
+    // package -> AA * messageType * messageSubType * dataSize * data
+    QStringList dataParts = myRecData.split("*",QString::SkipEmptyParts);
+
+    if ( (dataParts.size() == MESSAGE_DATA_PARTS) && (dataParts.at(3).toInt() == (dataParts.at(4).size())) )
+    {
+        receiveMessage();
+    }
+    else
+    {
+        qDebug()<<"The received message from " << getHostName() <<" is not consistent.";
+    }
+
+
+    /*
     // Split the data (Comma seperated format)
     QStringList list = myRecData.split(",",QString::SkipEmptyParts);
 
     // Incoming data parts
     qDebug()<<"Number of incoming data parts"<<list.size();
     qDebug()<<list;
-  /*  for(int i = 0; i < list.size();i++){
 
-        qDebug()<<list[i]<<" "<<i;
-    }*/
 
     // If list contains anything, process it
     if(list.size()>0)
@@ -173,8 +142,9 @@ void Client::receiveData(){
 
         }
     }
-
+*/
 	
+
 
 }
 
@@ -184,44 +154,7 @@ void Client::sendData(QByteArray data){
    // socket->waitForBytesWritten(500);
 
 }
-/*
-void Client::handleTask(int task , int dataSize){
 
-    switch(task)
-    {
-    case SEND_HOST_NAME:
-        sendHostName();
-        break;
-    case RECV_HOST_NAME:
-        receiveHostName();
-        break;
-    case RECV_IMAGE:
-        receiveImage();
-        break;
-    case RECV_IMAGE_DSIZE:
-        receiveImageDataSize();
-        break;
-    case RECV_ROBOT_INFO:
-        receiveRobotInfoFromNeighbor();
-        break;
-    case RECV_COORDINATOR_UPDATE:
-        receiveCoordinatorUpdateFromClient();
-        break;
-    case RECV_NETWORK_INFO:
-        receiveNetworkInfo();
-        break;
-    case RECV_HELP_REQUEST:
-        receiveMessage();
-        break;
-    case SEND_HELP_RESPONSE:
-        receiveMessage();
-        break;
-    default:
-        break;
-    }
-
-}
-*/
 void Client::getSocketDisconnected()
 {
 
@@ -290,205 +223,19 @@ void Client::setHostName(QString Name){
 
 }
 
-void Client::sendRobotInfotoNeighbor(communicationISLH::robotInfo info)
-{
-    QByteArray data;
-
-    QString temp = QString::number(info.neighbors.size());
-    //qDebug()<<info.neighbors.size();
-    data.append(temp);
-
-   // data.append(info.neighbors.size());
-
-    data.append(";");
-
-    for(int i = 0; i < info.neighbors.size();i++){
-
-        QString temp = QString::fromStdString(info.neighbors[i]);
-
-        data.append(temp);
-
-        data.append(";");
-
-
-    }
-    temp = QString::number(info.posX);
-
-    data.append(temp);
-
-    data.append(";");
-
-    temp = QString::number(info.posY);
-
-    data.append(temp);
-
-    data.append(";");
-
-    temp = QString::number(info.radius);
-
-    data.append(temp);
-
-    data.append(";");
-
-    temp = QString::number(info.targetX);
-
-    data.append(temp);
-
-    data.append(";");
-
-    temp = QString::number(info.targetY);
-
-    data.append(temp);
-
-    //data.append(";");
-
-    int dataSize = data.size();
-
-    QByteArray dat = makeDataPackage(RECV_ROBOT_INFO,dataSize,data);
-
-    this->socket->waitForBytesWritten(500);
-
-    sendData(dat);
-
-
-}
-void Client::receiveNetworkInfo()
-{
-    QStringList list = myRecData.split(";",QString::SkipEmptyParts);
-
-    if(list.size() > 0){
-        qDebug()<<list;
-        emit networkInfo(list);
-    }
-
-}
 void Client::receiveMessage()
 {
-    QStringList list = myRecData.split(";",QString::SkipEmptyParts);
+    //QStringList list = myRecData.split(";",QString::SkipEmptyParts);
 
-    qDebug()<<list;    
+    //qDebug()<<list;
 
-    emit incomingMessage(list);
-}
-void Client::receiveRobotInfoFromNeighbor()
-{
-    communicationISLH::robotInfo robotInfo;
+    //emit incomingMessage(list);
 
-    QStringList result = myRecData.split(";");
-
-    if(result.size() > 0)
-    {
-       int neighborSize = result.at(0).toInt();
-
-       robotInfo.neighbors.resize(neighborSize);
-
-       for(int i = 1; i <= neighborSize;i++)
-       {
-
-           robotInfo.neighbors[i-1] = result.at(i).toStdString();
-
-
-       }
-
-       robotInfo.posX = result.at(neighborSize+1).toFloat();
-
-       robotInfo.posY = result.at(neighborSize+2).toFloat();
-
-       robotInfo.radius = result.at(neighborSize+3).toFloat();
-
-       robotInfo.targetX = result.at(neighborSize+4).toFloat();
-
-       robotInfo.targetY = result.at(neighborSize+5).toFloat();
-
-       emit neighborInfo(robotInfo);
-      // qDebug()<<"Target y"<<robotInfo.targetY;
-    }
-
-
-}
-void Client::sendCoordinatorUpdatetoCoordinator(communicationISLH::neighborInfo info)
-{
-    QByteArray data;
-
-    QString temp = QString::number(info.posX);
-
-    data.append(temp);
-
-    data.append(";");
-
-    temp = QString::number(info.posY);
-
-    data.append(temp);
-
-    int dataSize = data.size();
-
-    QByteArray dat = makeDataPackage(RECV_COORDINATOR_UPDATE,dataSize,data);
-
-    this->socket->waitForBytesWritten(500);
-
-
-    sendData(dat);
-
-}
-void Client::receiveCoordinatorUpdateFromClient()
-{
-    communicationISLH::neighborInfo info;
-
-    QStringList result = myRecData.split(";");
-
-    qDebug()<<result;
-
-    if(result.size() > 1)
-    {
-        info.posX = result.at(0).toFloat();
-
-        info.posY = result.at(1).toFloat();
-
-
-        emit coordinatorUpdate(info);
-    }
-
-
-}
-void Client::sendNetworkInfo(QStringList info)
-{
-    QByteArray data;
-
-    qDebug()<<"Network info sent";
-
-   // QString temp = QString::number(info.neighbors.size());
-
-   // data.append(temp);
-
-   // data.append(info.neighbors.size());
-
-    //data.append(";");
-
-    for(int i = 0; i < info.size();i++){
-
-        data.append(info[i]);
-
-        data.append(";");
-
-    }
-
-    int dataSize = data.size();
-
-    QByteArray dat = makeDataPackage(RECV_NETWORK_INFO,dataSize,data);
-
-    this->socket->waitForBytesWritten(500);
-
-    sendData(dat);
-
-
+    emit incomingMessage(myRecData);
 }
 void Client::setIP(QString ip){
 
 	IP = ip;
-
-
-
-    //emit(sendClientInfo(list,type));
 
 }
 QString Client::getIP(){
@@ -499,61 +246,6 @@ QString Client::getIP(){
 }
 
 
-void Client::receiveSPCounter(bool respond){
-
-    if(speedTest || type == INCOMING_CLIENT){
-
-		speedCounter = myRecData.toLong();
-
-		myRecData.clear();
-
-		speedCounter++;
-
-		QString str;
-
-		str.setNum(speedCounter);
-
-		QByteArray dat = str.toAscii();
-
-		QByteArray dat2;
-
-//		dat2 = makeDataPackage(RECV_SP_COUNTER,dat.size(),dat);
-
-//		sendData(dat2);
-
-	}
-}
-void Client::sendSPCounter(){
-
-	speedTest = true;
-
-	QString str;
-
-	str.setNum(speedCounter);
-
-	QByteArray dat = str.toAscii();
-
-	QByteArray dat2;
-
-//	dat2 = makeDataPackage(RECV_SP_COUNTER,dat.size(),dat);
-
-//	sendData(dat2);
-
-
-}
-void Client::sendHostName(){
-
-    //int dataSize = 0;
-
-	QByteArray dat = hostName.toAscii();
-
-    int dataSize = dat.size();
-
-	dat = makeDataPackage(RECV_HOST_NAME,dataSize,dat);
-
-	sendData(dat);
-
-}
 void Client::receiveHostName(){
 
 
@@ -562,26 +254,10 @@ void Client::receiveHostName(){
 
 }
 
-void Client::sendAcknowledge(bool status){
 
-	Task t;
-
-	if(status) t = RECV_ACK_TRUE;
-	else t = RECV_ACK_FALSE;
-
-	QByteArray dummy, dummy2;
-	
-	dummy2 = makeDataPackage(t,0,dummy);
-
-	sendData(dummy2);
-
-}
-void Client::receiveAcknowledge(){
-
-//	emit(acknowledgeReceived(id));
-}
-void Client::sendOutgoingMessage(communicationISLH::helpMessage msg)
+void Client::sendOutgoingMessage(communicationISLH::outMessage msg, int msgIndx)
 {
+/*
     QByteArray data;
 
     QString temp = QString::number(msg.messageid);
@@ -596,10 +272,18 @@ void Client::sendOutgoingMessage(communicationISLH::helpMessage msg)
         dat = makeDataPackage(RECV_HELP_REQUEST,dataSize,data);
     else
         dat = makeDataPackage(SEND_HELP_RESPONSE,dataSize,data);
+*/
 
+    QByteArray data;
+
+    QString temp = QString::fromStdString(msg.message[msgIndx]);
+
+    qDebug()<<temp;
+
+    data.append(temp);
 
     this->socket->waitForBytesWritten(500);
 
-    sendData(dat);
+    sendData(data);
 
 }
