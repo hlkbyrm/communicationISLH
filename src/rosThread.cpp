@@ -1,5 +1,4 @@
 #include "rosThread.h"
-#include <communicationISLH/neighborInfo.h>
 #include "std_msgs/String.h"
 
 RosThread::RosThread()

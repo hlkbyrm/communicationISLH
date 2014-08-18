@@ -2,8 +2,6 @@
 #define ROBOT_H
 
 #include <QObject>
-//#include <communicationISLH/robotInfo.h>
-//#include <communicationISLH/networkInfo.h>
 #include <QString>
 #include "network/Client.h"
 

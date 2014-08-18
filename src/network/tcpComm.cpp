@@ -67,8 +67,6 @@ void tcpComm::getClientDisconnected(int id, int clientType){
 	
         outgoingClientSlots[id] = false;
 
-
-
 		QList<QString> clientInfo;
 
 		QString str;
