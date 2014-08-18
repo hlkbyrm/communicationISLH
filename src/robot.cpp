@@ -94,7 +94,7 @@ void Robot::receiveMessage(QString message)
 
         QString name = this->getName();
 
-        name.remove("IRobot");
+        //name.remove("IRobot");
 
         int id = name.toInt();
 

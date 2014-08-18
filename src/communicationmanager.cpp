@@ -58,11 +58,12 @@ bool CommunicationManager::readConfigFile(QString filename)
 
         QString temp = QString::number(robotID);
 
-        QString temp2 = "IRobot"+temp;
+        //QString temp2 = "IRobot"+temp;
 
         // qDebug()<<temp2;
 
-        myrobot->setName(temp2);
+        //myrobot->setName(temp2);
+        myrobot->setName(temp);
 
        // if(iscoord == 1) myrobot->setCoordinator(true);
 
