@@ -52,7 +52,7 @@ bool CommunicationManager::readConfigFile(QString filename)
     {
         // qDebug()<<result["numrobots"].toString();
 
-        int numrobots = result["numrobots"].toInt();
+        int numrobots = result["numrobots"].toInt()-1;
       //  int iscoord =   result["iscoordinator"].toInt();
         int robotID =   result["robotID"].toInt();
 
@@ -303,7 +303,8 @@ bool CommunicationManager::initializeNetwork()
     // If I am the coordinator I should connect to other robots
     //if(myrobot->isCoordinator())
     //{
-        //this->connectToRobots();
+
+        this->connectToRobots();
 
         neighbors.clear();
 
