@@ -82,20 +82,28 @@ void Client::receiveData(){
     // Convert to QString
     myRecData = QString::fromAscii(myRecDataBA);
 
-    // check package consistency
-    // package -> AA * messageType * messageSubType * dataSize * data
-    QStringList dataParts = myRecData.split("*",QString::SkipEmptyParts);
+    // Received data might contain more than one data package
+    // We must split data packages
+    QStringList datas = myRecData.split("AA*",QString::SkipEmptyParts);
+    for(int i=0;i<datas.count();i++){
 
-    if ( (dataParts.size() == MESSAGE_DATA_PARTS) && (dataParts.at(3).toInt() == (dataParts.at(4).size())) )
-    {
-        receiveMessage();
+        QString data = "AA*" + datas.at(i);
+
+        // check package consistency
+        // package -> AA * messageType * messageSubType * dataSize * data
+        QStringList dataParts = data.split("*",QString::SkipEmptyParts);
+
+        if ( (dataParts.size() == MESSAGE_DATA_PARTS) && (dataParts.at(3).toInt() == (dataParts.at(4).size())) )
+        {
+            myRecData = data;
+            receiveMessage();
+        }
+        else
+        {
+            qDebug()<<"The received message from " << getHostName() <<" is not consistent.";
+        }
+
     }
-    else
-    {
-        qDebug()<<"The received message from " << getHostName() <<" is not consistent.";
-    }
-
-
     /*
     // Split the data (Comma seperated format)
     QStringList list = myRecData.split(",",QString::SkipEmptyParts);

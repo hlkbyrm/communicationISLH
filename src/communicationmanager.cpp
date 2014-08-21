@@ -330,7 +330,6 @@ void CommunicationManager::connectToRobots()
         //this->connectToHost(robots.at(i)->getIP(),1200);
 
         this->connectToHostWithWait(robots.at(i)->getIP(),1200);
-
     }
 
 }
