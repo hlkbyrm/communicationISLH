@@ -7,6 +7,7 @@ project(communicationISLH)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  ISLH_msgs
 )
 
 SET(CMAKE_BUILD_TYPE RelWithDebInfo)
