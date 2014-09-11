@@ -11,12 +11,12 @@ Robot::Robot(QObject *parent) :
     //coordinator = false;
 }
 /*
-communicationISLH::robotInfo Robot::getRobotInfo(){
+ISLH_msgs::robotInfo Robot::getRobotInfo(){
 
     return this->info;
 
 }
-void Robot::setRobotInfo(communicationISLH::robotInfo info){
+void Robot::setRobotInfo(ISLH_msgs::robotInfo info){
 
     this->info = info;
 }
@@ -82,7 +82,7 @@ void Robot::getClientDisconnected(int type)
     }
 }
 
-void Robot::sendOutgoingMessage(communicationISLH::outMessage msg, int msgIndx)
+void Robot::sendOutgoingMessage(ISLH_msgs::outMessage msg, int msgIndx)
 {
     if(this->isOutgoingConnected())
         this->outgoingclient->sendOutgoingMessage(msg, msgIndx);
@@ -90,7 +90,7 @@ void Robot::sendOutgoingMessage(communicationISLH::outMessage msg, int msgIndx)
 }
 void Robot::receiveMessage(QString message)
 {
-        communicationISLH::inMessage msg;
+        ISLH_msgs::inMessage msg;
 
         QString name = this->getName();
 

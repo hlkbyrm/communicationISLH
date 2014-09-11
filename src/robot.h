@@ -12,11 +12,11 @@ public:
 
     explicit Robot(QObject *parent = 0);
 
-    //void setRobotInfo(communicationISLH::robotInfo info);
+    //void setRobotInfo(ISLH_msgs::robotInfo info);
 
-    void sendOutgoingMessage(communicationISLH::outMessage msg, int msgIndx);
+    void sendOutgoingMessage(ISLH_msgs::outMessage msg, int msgIndx);
 
-  //  communicationISLH::robotInfo getRobotInfo();
+  //  ISLH_msgs::robotInfo getRobotInfo();
 
     void setName(QString nam);
 
@@ -40,7 +40,7 @@ public:
 
 private:
 
-   // communicationISLH::robotInfo info;
+   // ISLH_msgs::robotInfo info;
 
     QString IP;
 

@@ -5,8 +5,8 @@
 #include "network/tcpComm.h"
 #include "robot.h"
 #include <QObject>
-#include <communicationISLH/inMessage.h>
-#include <communicationISLH/outMessage.h>
+#include <ISLH_msgs/inMessage.h>
+#include <ISLH_msgs/outMessage.h>
 #include <QXmlStreamReader>
 
 class RosThread;
@@ -27,18 +27,18 @@ public:
 
     /*
     // Handle messages from Navigation ISL
-    void handleNavigationISLInfo(communicationISLH::robotInfo msg);
+    void handleNavigationISLInfo(ISLH_msgs::robotInfo msg);
 
     // Handle coordinator updates from Navigation ISL
-    void handleCoordinatorUpdate(communicationISLH::robotInfo info);
+    void handleCoordinatorUpdate(ISLH_msgs::robotInfo info);
 
     // Handle the coordinator update
-    void handleNetworkUpdateFromCoordinator(communicationISLH::networkInfo info);
+    void handleNetworkUpdateFromCoordinator(ISLH_msgs::networkInfo info);
 
-    void handleHotspotHandlerMessageOut(communicationISLH::helpMessage msg);
+    void handleHotspotHandlerMessageOut(ISLH_msgs::helpMessage msg);
 */
 
-    void handleMessageOut(communicationISLH::outMessage msg);
+    void handleMessageOut(ISLH_msgs::outMessage msg);
 
     bool readConfigFile(QString filename);
 

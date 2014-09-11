@@ -25,7 +25,7 @@ void RosThread::work(){
      emit rosStarted();
 
 
-     messageInPublisher = n.advertise<communicationISLH::inMessage>("communicationISLH/messageIn",5);
+     messageInPublisher = n.advertise<ISLH_msgs::inMessage>("communicationISLH/messageIn",5);
 
      messageOutSubscriber = n.subscribe("messageDecoderISLH/messageOut",5,&CommunicationManager::handleMessageOut,this->manager);
 

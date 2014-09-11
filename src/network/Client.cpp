@@ -263,7 +263,7 @@ void Client::receiveHostName(){
 }
 
 
-void Client::sendOutgoingMessage(communicationISLH::outMessage msg, int msgIndx)
+void Client::sendOutgoingMessage(ISLH_msgs::outMessage msg, int msgIndx)
 {
 /*
     QByteArray data;

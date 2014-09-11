@@ -4,7 +4,7 @@
 #pragma once
 #include <QtNetwork>
 #include <QtCore/QByteArray>
-#include <communicationISLH/outMessage.h>
+#include <ISLH_msgs/outMessage.h>
 
 #define INCOMING_CLIENT 0
 #define OUTGOING_CLIENT 1
@@ -64,10 +64,10 @@ public:
     void receiveHostName();
 
     // Send the current robot information to the outgoing client
-    //void sendRobotInfotoNeighbor(communicationISLH::robotInfo info);
+    //void sendRobotInfotoNeighbor(ISLH_msgs::robotInfo info);
 
     // Send the coordinator update to the outgoing client
-    //void sendCoordinatorUpdatetoCoordinator(communicationISLH::neighborInfo info);
+    //void sendCoordinatorUpdatetoCoordinator(ISLH_msgs::neighborInfo info);
 
     // Sends the network information from coordinator to clients
     //void sendNetworkInfo(QStringList info);
@@ -82,7 +82,7 @@ public:
     //void receiveRobotInfoFromNeighbor();
 
     // Send incoming hotspot related message to outgoing client
-    void sendOutgoingMessage(communicationISLH::outMessage msg, int msgIndx);
+    void sendOutgoingMessage(ISLH_msgs::outMessage msg, int msgIndx);
 
     void receiveMessage();
 
@@ -126,8 +126,8 @@ private:
         void clientDisconnected(int type);
         void sendClientInfo(const QList<QString>& list, int type);
 		void acknowledgeReceived(int id);
-        //void neighborInfo(communicationISLH::robotInfo info);
-        //void coordinatorUpdate(communicationISLH::neighborInfo info);
+        //void neighborInfo(ISLH_msgs::robotInfo info);
+        //void coordinatorUpdate(ISLH_msgs::neighborInfo info);
         //void networkInfo(QStringList list);
         void incomingMessage(QString message);
 };

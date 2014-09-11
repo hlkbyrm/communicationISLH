@@ -334,7 +334,7 @@ void CommunicationManager::connectToRobots()
 
 }
 
-void CommunicationManager::handleMessageOut(communicationISLH::outMessage msg)
+void CommunicationManager::handleMessageOut(ISLH_msgs::outMessage msg)
 {
 
    //multiple message sending

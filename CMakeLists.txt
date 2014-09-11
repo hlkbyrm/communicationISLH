@@ -7,7 +7,6 @@ project(communicationISLH)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
-  message_generation
 )
 
 SET(CMAKE_BUILD_TYPE RelWithDebInfo)
@@ -65,14 +64,6 @@ QT4_WRAP_CPP(QT_MOC_HPP ${QT_HEADERS})
 #   Message2.msg
 # )
 
-add_message_files(
-  DIRECTORY msg 
-  FILES
-  inMessage.msg
-  outMessage.msg
-)
-generate_messages(DEPENDENCIES std_msgs)
-
 #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/msg)
 
 ## Generate services in the 'srv' folder
@@ -107,7 +98,7 @@ generate_messages(DEPENDENCIES std_msgs)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES coalitionleaderISL
-  CATKIN_DEPENDS message_runtime#roscpp std-msgs
+#  CATKIN_DEPENDS message_runtime#roscpp std-msgs
 #  DEPENDS system_lib
 )
 
