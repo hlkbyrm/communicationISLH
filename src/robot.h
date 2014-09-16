@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QString>
 #include "network/Client.h"
+#include <std_msgs/String.h>
 
 class Robot : public QObject
 {

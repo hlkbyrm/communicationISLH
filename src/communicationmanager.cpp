@@ -153,6 +153,10 @@ void CommunicationManager::connectToHostWithWait(QString hostAddress, quint16 po
 
                     qDebug()<<"Outgoing connected : "<<robots[i]->getIP();
 
+                    std_msgs::String msg;
+                    msg.data = QString("%1:1").arg(robots.at(i)->getName().remove("IRobot")).toStdString();
+                    rosthread->robotConnectionInfoPub.publish(msg);
+
                     //tempClient=0;
                     //tempClient->deleteLater();
 
@@ -384,6 +388,10 @@ void CommunicationManager::handleNewCommRequest(QTcpSocket *socket)
             */
 
             qDebug()<<"A new connection";
+
+            std_msgs::String msg;
+            msg.data = QString("%1:1").arg(robots.at(i)->getName().remove("IRobot")).toStdString();
+            rosthread->robotConnectionInfoPub.publish(msg);
 
 
             /*

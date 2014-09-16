@@ -24,6 +24,7 @@ void RosThread::work(){
 
      emit rosStarted();
 
+     robotConnectionInfoPub = n.advertise<std_msgs::String>("communicationISLH/robotConnectionInfo",5);
 
      messageInPublisher = n.advertise<ISLH_msgs::inMessage>("communicationISLH/messageIn",5);
 

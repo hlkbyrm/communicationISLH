@@ -68,6 +68,11 @@ void Robot::getClientDisconnected(int type)
 {
     qDebug()<<"Robot "<<this->name<<" client "<<type<<" disconnected"<<"name "<<name;
 
+    std_msgs::String msg;
+    msg.data = QString("%1:0").arg(this->name.remove("IRobot")).toStdString();
+    CommunicationManager* manager = (CommunicationManager*)this->parent();
+    manager->rosthread->robotConnectionInfoPub.publish(msg);
+
     if(type == INCOMING_CLIENT)
     {
         //incomingclient->socket->abort();

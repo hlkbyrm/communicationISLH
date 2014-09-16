@@ -35,6 +35,7 @@ private:
      ros::NodeHandle n;
 
      ros::Publisher neighborInfoPublisher;
+     ros::Publisher robotConnectionInfoPub;
 
      /*
      ros::Subscriber robotInfoSubscriber;
