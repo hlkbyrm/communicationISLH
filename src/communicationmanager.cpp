@@ -155,8 +155,6 @@ void CommunicationManager::connectToHostWithWait(QString hostAddress, quint16 po
                     std_msgs::String msg;
                     msg.data = QString("%1:1").arg(robots.at(i)->getName().remove("IRobot")).toStdString();
                     rosthread->robotConnectionInfoPub.publish(msg);
-                    qDebug() << "asd3";
-
                     //tempClient=0;
                     //tempClient->deleteLater();
 
