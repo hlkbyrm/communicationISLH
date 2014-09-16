@@ -14,8 +14,8 @@
 CommunicationManager::CommunicationManager(QObject *parent) :
     QObject(parent)
 {
-
-
+}
+void CommunicationManager::start(){
     myrobot = new Robot(this);
 
     if(!this->initializeNetwork())
@@ -24,9 +24,8 @@ CommunicationManager::CommunicationManager(QObject *parent) :
     }
 
         firstNetworkReceived = false;
-
-
 }
+
 bool CommunicationManager::readConfigFile(QString filename)
 {
     QFile file(filename);
@@ -156,6 +155,7 @@ void CommunicationManager::connectToHostWithWait(QString hostAddress, quint16 po
                     std_msgs::String msg;
                     msg.data = QString("%1:1").arg(robots.at(i)->getName().remove("IRobot")).toStdString();
                     rosthread->robotConnectionInfoPub.publish(msg);
+                    qDebug() << "asd3";
 
                     //tempClient=0;
                     //tempClient->deleteLater();

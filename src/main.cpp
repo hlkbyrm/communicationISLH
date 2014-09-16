@@ -32,6 +32,7 @@ int main(int argc,char** argv)
 
     thr.start();
 
+    manager.start();
 
     return app.exec();
 
