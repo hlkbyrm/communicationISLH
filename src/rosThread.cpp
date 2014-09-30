@@ -24,11 +24,27 @@ void RosThread::work(){
 
      emit rosStarted();
 
-     robotConnectionInfoPub = n.advertise<std_msgs::String>("communicationISLH/robotConnectionInfo",5);
 
-     messageInPublisher = n.advertise<ISLH_msgs::inMessage>("communicationISLH/messageIn",5);
 
-     messageOutSubscriber = n.subscribe("messageDecoderISLH/messageOut",5,&CommunicationManager::handleMessageOut,this->manager);
+     QString path = QDir::homePath();
+     path.append("/ISL_workspace/src/configISL.json");
+
+
+     if(!readConfigFile(path)){
+
+         qDebug()<< "Read Config File Failed!!!";
+
+         ros::shutdown();
+
+         emit rosFinished();
+     }
+
+
+     robotConnectionInfoPub = n.advertise<std_msgs::String>("communicationISLH/robotConnectionInfo", queueSize);
+
+     messageInPublisher = n.advertise<ISLH_msgs::inMessage>("communicationISLH/messageIn", queueSize);
+
+     messageOutSubscriber = n.subscribe("messageDecoderISLH/messageOut", queueSize, &CommunicationManager::handleMessageOut,this->manager);
 
     ros::Rate loop(30);
 
@@ -52,3 +68,37 @@ void RosThread::shutdownROS()
 }
 
 
+
+// Reads the config file
+bool RosThread::readConfigFile(QString filename)
+{
+    QFile file(filename);
+
+    if(!file.exists()) return false;
+
+    if(!file.open(QFile::ReadOnly)) return false;
+
+    QJson::Parser parser;
+
+    bool ok;
+
+    QVariantMap result = parser.parse(&file,&ok).toMap();
+
+    if(!ok){
+
+        file.close();
+        qDebug()<<"Fatal reading error";
+
+        return false;
+    }
+    else
+    {
+
+        queueSize = result["queueSize"].toInt();
+        qDebug()<<result["queueSize"].toString();
+
+    }
+    file.close();
+    return true;
+
+}

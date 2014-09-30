@@ -3,6 +3,7 @@
 #include <ros/ros.h>
 #include "communicationmanager.h"
 #include <QTimer>
+#include <qjson/parser.h>
 
 #define numOfRobots 5
 
@@ -16,55 +17,41 @@ public:
 
     RosThread(CommunicationManager* currentmanager);
 
-   // RosThread(int argc, char **argv, std::string nodeName);
+    // RosThread(int argc, char **argv, std::string nodeName);
 
 public:
 
-     void shutdownROS();
+    void shutdownROS();
 
-     friend class CommunicationManager;
+    friend class CommunicationManager;
 
-     friend class Robot;
+    friend class Robot;
 
 private:
 
-     CommunicationManager* manager;
+    CommunicationManager* manager;
 
-     bool shutdown;
+    int queueSize;
 
-     ros::NodeHandle n;
+    bool shutdown;
 
-     ros::Publisher neighborInfoPublisher;
-     ros::Publisher robotConnectionInfoPub;
+    ros::NodeHandle n;
 
-     /*
-     ros::Subscriber robotInfoSubscriber;
+    ros::Publisher neighborInfoPublisher;
+    ros::Publisher robotConnectionInfoPub;
 
-     // Publish the received coordinator Update to the coordinator
-     ros::Publisher coordinatorUpdatePublisher;
+    ros::Publisher messageInPublisher;
 
-     ros::Publisher hotspotHandlerMessageInPublisher;
+    ros::Subscriber messageOutSubscriber;
 
-     // Subscribe for coordinatorUpdate from Navigation
-     ros::Subscriber coordinatorUpdateSubscriber;
-
-     // Subscribe for a network update from coordinator
-     ros::Subscriber networkUpdateSubscriber;
-
-     ros::Subscriber hotspotHandlerMessageOutSubscriber;
-*/
-
-   ros::Publisher messageInPublisher;
-
-   ros::Subscriber messageOutSubscriber;
-
+    bool readConfigFile(QString filename);
 
 public slots:
-     void work();
+    void work();
 
 signals:
-   void rosFinished();
-   void  rosStarted();
-   void  rosStartFailed();
+    void rosFinished();
+    void  rosStarted();
+    void  rosStartFailed();
 
 };
