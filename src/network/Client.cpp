@@ -14,7 +14,7 @@ int iii = 0;
 	
 Client::Client(QTcpSocket* sock, int clientType, QObject* parent):QObject(parent)
 {
-
+    myRecData = "";
 
 	socket = sock;
 
@@ -80,14 +80,14 @@ void Client::receiveData(){
     myRecDataBA = socket->readAll();
 
     // Convert to QString
-    myRecData = QString::fromAscii(myRecDataBA);
+    myRecData += QString::fromAscii(myRecDataBA);
 
     // Received data might contain more than one data package
     // We must split data packages
-    QStringList datas = myRecData.split("AA*",QString::SkipEmptyParts);
-    for(int i=0;i<datas.count();i++){
+    QStringList datas = myRecData.split("<EOF>",QString::KeepEmptyParts);
+    for(int i=0;i<datas.count() - 1;i++){
 
-        QString data = "AA*" + datas.at(i);
+        QString data = datas.at(i);
 
         // check package consistency
         // package -> AA * messageType * messageSubType * dataSize * data
@@ -104,56 +104,7 @@ void Client::receiveData(){
         }
 
     }
-    /*
-    // Split the data (Comma seperated format)
-    QStringList list = myRecData.split(",",QString::SkipEmptyParts);
-
-    // Incoming data parts
-    qDebug()<<"Number of incoming data parts"<<list.size();
-    qDebug()<<list;
-
-
-    // If list contains anything, process it
-    if(list.size()>0)
-    {
-        // If the control byte is correct
-        if(list.at(0) == "AA")
-        {
-            // Read the task
-            int task = list.at(1).toInt();
-
-            int dataSize = list.at(2).toInt();
-
-            int meaningfulSize = dataSize + list.at(1).size() + list.at(0).size() + list.at(2).size() + COMMA_OFFSET;
-
-            if(myRecData.size() > meaningfulSize)
-            {
-                myRecData.remove(meaningfulSize,myRecData.size() - meaningfulSize);
-
-                list.clear();
-
-                list = myRecData.split(",");
-            }
-
-
-            // Clear the buffers
-            myRecData.clear();
-            myRecDataBA.clear();
-
-            // The end part contains the whole data
-            myRecData = list.at(list.size()-1);
-
-            // Handle data
-            //this->handleTask(task,1);
-
-            myRecData.clear();
-
-        }
-    }
-*/
-	
-
-
+    myRecData = datas.last();
 }
 
 void Client::sendData(QByteArray data){
@@ -284,7 +235,7 @@ void Client::sendOutgoingMessage(ISLH_msgs::outMessage msg, int msgIndx)
 
     QByteArray data;
 
-    QString temp = QString::fromStdString(msg.message[msgIndx]);
+    QString temp = QString::fromStdString(msg.message[msgIndx]) + "<EOF>";
 
     qDebug()<<temp;
 
