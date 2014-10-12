@@ -342,19 +342,23 @@ void CommunicationManager::handleMessageOut(ISLH_msgs::outMessage msg)
    //multiple message sending
     for(int j=0; j<msg.robotid.size(); j++)
     {
-        QString str = "IRobot";
+        //QString str = "IRobot";
 
-        str.append(QString::number(msg.robotid[j]));
+        //str.append(QString::number(msg.robotid[j]));
 
-        qDebug()<<"The outgoing hotspot message robot name "<<str;
+       // qDebug()<<"The outgoing hotspot message robot name "<<str;
+        qDebug()<<"The outgoing message-> robot id: "<<msg.robotid[j];
 
         for(int i = 0; i < robots.size(); i++ )
         {
 
-            if(str == robots.at(i)->getName())
+            //if(str == robots.at(i)->getName())
+            if(msg.robotid[j] == robots.at(i)->getName().toInt())
             {
 
                 //robots.at(i)->sendOutgoingMessage(msg, j);
+
+                qDebug() << "robot Indx: "<<j <<" messageIndx: "<<msg.messageIndx[j] << " robotID: "<<msg.robotid[j] ;
 
                 robots.at(i)->sendOutgoingMessage(msg, msg.messageIndx[j]);
             }
