@@ -82,6 +82,8 @@ void Client::receiveData(){
     // Convert to QString
     myRecData += QString::fromAscii(myRecDataBA);
 
+    qDebug()<<"Incoming message-> robot id:"<< getHostName() << "Message: "<< myRecData;
+
     // Received data might contain more than one data package
     // We must split data packages
     QStringList datas = myRecData.split("<EOF>",QString::KeepEmptyParts);
@@ -241,7 +243,7 @@ void Client::sendOutgoingMessage(ISLH_msgs::outMessage msg, int msgIndx)
 
     data.append(temp);
 
-    this->socket->waitForBytesWritten(500);
+    this->socket->waitForBytesWritten(2500);
 
     sendData(data);
 
