@@ -96,6 +96,8 @@ public:
 	
 private:
 
+    QVector<QByteArray> waitingMessages;
+    bool written;
 
 
     // 0: incoming client, 1: outgoing client
@@ -115,8 +117,9 @@ private:
     //long imageDataSize;
 	
 	public slots:
-		
-		void sendData(QByteArray data);
+
+    void sendData(QByteArray data);
+    void bytesWritten(qint64 byteNum);
 		void receiveData();
 		void displaySocketError(QAbstractSocket::SocketError socketError);
 		void getSocketDisconnected();

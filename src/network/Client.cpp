@@ -13,6 +13,8 @@ bool firstTime = true;
 	
 Client::Client(QTcpSocket* sock, int clientType, QObject* parent):QObject(parent)
 {
+    written = true;
+
     myRecData = "";
 
 	socket = sock;
@@ -29,7 +31,9 @@ Client::Client(QTcpSocket* sock, int clientType, QObject* parent):QObject(parent
 
     connect(this, SIGNAL(clientDisconnected(int)),this->parent(), SLOT(getClientDisconnected(int)));
 
-	connect(socket,SIGNAL(readyRead()),this,SLOT(receiveData()));
+    connect(socket,SIGNAL(readyRead()),this,SLOT(receiveData()));
+
+    connect(socket,SIGNAL(bytesWritten(qint64)),this,SLOT(bytesWritten(qint64)));
 
     connect(this,SIGNAL(incomingMessage(QString)),this->parent(),SLOT(receiveMessage(QString)));
 
@@ -109,13 +113,25 @@ void Client::receiveData(){
 }
 
 void Client::sendData(QByteArray data){
-    bool flag = false;
-    while(!flag){
-        socket->write(data);
-        if (!socket->waitForBytesWritten(250))
-            qDebug()<<"writing to the socket failed";
-        else flag = true;
+    if(!written){
+        waitingMessages.push_back(data);
+        return;
     }
+
+    QByteArray m;
+    foreach(QByteArray msg,waitingMessages)
+        m.append(msg);
+    waitingMessages.clear();
+
+    m.append(data);
+
+    written = false;
+    socket->write(m);
+}
+
+void Client::bytesWritten(qint64 byteNum){
+    written = true;
+    qDebug() << "sending finished" << byteNum;
 }
 
 void Client::getSocketDisconnected()
