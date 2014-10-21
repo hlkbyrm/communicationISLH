@@ -17,8 +17,6 @@ class CommunicationManager : public QObject
 public:
     explicit CommunicationManager(QObject *parent = 0);
 
-    void start();
-
     // Connection request to the given address and port
     void connectToHost(QString hostAddress, quint16 port);
 
@@ -69,6 +67,8 @@ private:
 signals:
     
 public slots:
+
+    void start();
 
 private slots:
 

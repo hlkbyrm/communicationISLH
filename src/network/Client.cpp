@@ -10,7 +10,6 @@
 using namespace std;
 
 bool firstTime = true;
-int iii = 0;
 	
 Client::Client(QTcpSocket* sock, int clientType, QObject* parent):QObject(parent)
 {
@@ -110,10 +109,13 @@ void Client::receiveData(){
 }
 
 void Client::sendData(QByteArray data){
-
-	socket->write(data); 
-   // socket->waitForBytesWritten(500);
-
+    bool flag = false;
+    while(!flag){
+        socket->write(data);
+        if (!socket->waitForBytesWritten(250))
+            qDebug()<<"writing to the socket failed";
+        else flag = true;
+    }
 }
 
 void Client::getSocketDisconnected()
@@ -243,7 +245,7 @@ void Client::sendOutgoingMessage(ISLH_msgs::outMessage msg, int msgIndx)
 
     data.append(temp);
 
-    this->socket->waitForBytesWritten(2500);
+    //this->socket->waitForBytesWritten(2500);
 
     sendData(data);
 
