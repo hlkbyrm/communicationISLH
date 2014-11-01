@@ -14,8 +14,19 @@
 CommunicationManager::CommunicationManager(QObject *parent) :
     QObject(parent)
 {
+ /*
+    myrobot = new Robot(this);
+
+    if(!this->initializeNetwork())
+    {
+        qDebug()<<"Initialization failed";
+    }
+
+        firstNetworkReceived = false;
+        */
 }
-void CommunicationManager::start(){
+
+void CommunicationManager::startt(){
     myrobot = new Robot(this);
 
     if(!this->initializeNetwork())
@@ -152,9 +163,11 @@ void CommunicationManager::connectToHostWithWait(QString hostAddress, quint16 po
 
                     qDebug()<<"Outgoing connected : "<<robots[i]->getIP();
 
+
                     std_msgs::String msg;
                     msg.data = QString("%1:1").arg(robots.at(i)->getName().remove("IRobot")).toStdString();
-                    rosthread->robotConnectionInfoPub.publish(msg);
+                    this->rosthread->robotConnectionInfoPub.publish(msg);
+
                     //tempClient=0;
                     //tempClient->deleteLater();
 
@@ -163,7 +176,7 @@ void CommunicationManager::connectToHostWithWait(QString hostAddress, quint16 po
             }
 
         }
-        this->delay(1);
+        //this->delay(1);
     }
 /*    else
     {
@@ -336,31 +349,32 @@ void CommunicationManager::connectToRobots()
 
 }
 
-void CommunicationManager::handleMessageOut(ISLH_msgs::outMessage msg)
+void CommunicationManager::handleMessageOut(const ISLH_msgs::outMessage::ConstPtr &msg)
 {
 
+    qDebug()<<"hoops";
    //multiple message sending
-    for(int j=0; j<msg.robotid.size(); j++)
+    for(int j=0; j<msg->robotid.size(); j++)
     {
         //QString str = "IRobot";
 
         //str.append(QString::number(msg.robotid[j]));
 
        // qDebug()<<"The outgoing hotspot message robot name "<<str;
-        qDebug()<<"The outgoing message-> robot id: "<<msg.robotid[j];
+        qDebug()<<"The outgoing message-> robot id: "<<msg->robotid[j];
 
         for(int i = 0; i < robots.size(); i++ )
         {
 
             //if(str == robots.at(i)->getName())
-            if(msg.robotid[j] == robots.at(i)->getName().toInt())
+            if(msg->robotid[j] == robots.at(i)->getName().toInt())
             {
 
                 //robots.at(i)->sendOutgoingMessage(msg, j);
 
-                qDebug() << "robot Indx: "<<j <<" messageIndx: "<<msg.messageIndx[j] << " robotID: "<<msg.robotid[j] ;
+                qDebug() << "robot Indx: "<<j <<" messageIndx: "<<msg->messageIndx[j] << " robotID: "<<msg->robotid[j] ;
 
-                robots.at(i)->sendOutgoingMessage(msg, msg.messageIndx[j]);
+                robots.at(i)->sendOutgoingMessage(msg, msg->messageIndx[j]);
             }
         }
     }

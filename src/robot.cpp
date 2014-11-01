@@ -87,7 +87,7 @@ void Robot::getClientDisconnected(int type)
     }
 }
 
-void Robot::sendOutgoingMessage(ISLH_msgs::outMessage msg, int msgIndx)
+void Robot::sendOutgoingMessage(const ISLH_msgs::outMessage::ConstPtr &msg, int msgIndx)
 {
     if(this->isOutgoingConnected())
         this->outgoingclient->sendOutgoingMessage(msg, msgIndx);

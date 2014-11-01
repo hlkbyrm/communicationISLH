@@ -17,6 +17,8 @@ class CommunicationManager : public QObject
 public:
     explicit CommunicationManager(QObject *parent = 0);
 
+    void startt();
+
     // Connection request to the given address and port
     void connectToHost(QString hostAddress, quint16 port);
 
@@ -38,13 +40,14 @@ public:
     void handleHotspotHandlerMessageOut(ISLH_msgs::helpMessage msg);
 */
 
-    void handleMessageOut(ISLH_msgs::outMessage msg);
+    void handleMessageOut(const ISLH_msgs::outMessage::ConstPtr &msg);
 
     bool readConfigFile(QString filename);
 
     bool initializeNetwork();
 
     RosThread* rosthread;
+
 
 private:
 
@@ -65,11 +68,9 @@ private:
    // RosThread* rosthread;
 
 signals:
-    
+
 public slots:
-
-    void start();
-
+    
 private slots:
 
     void connecttt();

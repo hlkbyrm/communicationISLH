@@ -15,7 +15,7 @@ public:
 
     //void setRobotInfo(ISLH_msgs::robotInfo info);
 
-    void sendOutgoingMessage(ISLH_msgs::outMessage msg, int msgIndx);
+    void sendOutgoingMessage(const ISLH_msgs::outMessage::ConstPtr &msg, int msgIndx);
 
   //  ISLH_msgs::robotInfo getRobotInfo();
 

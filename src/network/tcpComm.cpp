@@ -80,9 +80,9 @@ void tcpComm::getClientDisconnected(int id, int clientType){
         getClientInfo(clientInfo , OUTGOING_CLIENT);
 
         if(id >=0)
-        this->outgoingClients.remove(id);
+        //this->outgoingClients.remove(id);
 
-      //  outgoingClients[id]->deleteLater();
+        outgoingClients[id]->deleteLater();
 
 		
 	

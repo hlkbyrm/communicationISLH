@@ -25,7 +25,8 @@ class Client : public QObject
 {
 		Q_OBJECT
 public:
-	
+    QMutex mutex;
+
     // Constructor for incoming Client
     Client(QTcpSocket* sock, int clientType, QObject* parent = 0);
 	
@@ -82,7 +83,7 @@ public:
     //void receiveRobotInfoFromNeighbor();
 
     // Send incoming hotspot related message to outgoing client
-    void sendOutgoingMessage(ISLH_msgs::outMessage msg, int msgIndx);
+    void sendOutgoingMessage(const ISLH_msgs::outMessage::ConstPtr &msg, int msgIndx);
 
     void receiveMessage();
 
@@ -118,7 +119,7 @@ private:
 	
 	public slots:
 
-    void sendData(QByteArray data);
+    void sendData(QByteArray &data);
     void bytesWritten(qint64 byteNum);
 		void receiveData();
 		void displaySocketError(QAbstractSocket::SocketError socketError);

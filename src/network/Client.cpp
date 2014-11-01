@@ -21,6 +21,8 @@ Client::Client(QTcpSocket* sock, int clientType, QObject* parent):QObject(parent
 
     socket->setReadBufferSize(0);
 
+    socket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
+
 	type = clientType;
 
     IP = socket->peerAddress().toString(); // get IP
@@ -43,7 +45,6 @@ Client::Client(QTcpSocket* sock, int clientType, QObject* parent):QObject(parent
 
     qDebug()<<"Client IP is: "<<IP;
 
-
 }
 // Outgoing client constructor
 Client::Client(int clientType, QObject* parent):QObject(parent)
@@ -53,6 +54,8 @@ Client::Client(int clientType, QObject* parent):QObject(parent)
     socket = new QTcpSocket(this);
 	    
 	socket->setReadBufferSize(0);
+
+    socket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
 
 	type = clientType;
 
@@ -69,7 +72,6 @@ Client::Client(int clientType, QObject* parent):QObject(parent)
 
 
 	clientSocketError = QAbstractSocket::UnknownSocketError; // initially no error
-
 }
 Client::~Client()
 {
@@ -112,7 +114,10 @@ void Client::receiveData(){
     myRecData = datas.last();
 }
 
-void Client::sendData(QByteArray data){
+void Client::sendData(QByteArray &data){
+    QMutexLocker ml(&mutex);
+
+    qDebug()<<"sendData-begin";
     qDebug() << written;
     if(!written){
         waitingMessages.push_back(data);
@@ -122,7 +127,7 @@ void Client::sendData(QByteArray data){
     QByteArray m;
     foreach(QByteArray msg,waitingMessages)
         m.append(msg);
-    waitingMessages.clear();
+     waitingMessages.clear();
 
     m.append(data);
 
@@ -130,12 +135,15 @@ void Client::sendData(QByteArray data){
 
     written = false;
     socket->write(m);
+
+    qDebug()<<"sendData-End";
 }
 
 void Client::bytesWritten(qint64 byteNum){
     written = true;
     qDebug() << "sending finished" << byteNum;
-    sendData(QByteArray());
+    QByteArray temp;
+    sendData(temp);
 }
 
 void Client::getSocketDisconnected()
@@ -238,7 +246,7 @@ void Client::receiveHostName(){
 }
 
 
-void Client::sendOutgoingMessage(ISLH_msgs::outMessage msg, int msgIndx)
+void Client::sendOutgoingMessage(const ISLH_msgs::outMessage::ConstPtr &msg, int msgIndx)
 {
 /*
     QByteArray data;
@@ -259,14 +267,14 @@ void Client::sendOutgoingMessage(ISLH_msgs::outMessage msg, int msgIndx)
 
     QByteArray data;
 
-    QString temp = QString::fromStdString(msg.message[msgIndx]) + "<EOF>";
+    QString temp = QString::fromStdString(msg->message[msgIndx]) + "<EOF>";
 
     qDebug()<<temp;
 
     data.append(temp);
 
     //this->socket->waitForBytesWritten(2500);
-
+    qDebug()<<"SOM";
     sendData(data);
 
 }

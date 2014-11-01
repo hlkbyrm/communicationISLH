@@ -27,9 +27,10 @@ public:
 
     friend class Robot;
 
+
 private:
 
-    CommunicationManager* manager;
+     CommunicationManager* manager;
 
     int queueSize;
 
@@ -50,7 +51,7 @@ public slots:
     void work();
 
 signals:
-    void rosFinished();
+    void  rosFinished();
     void  rosStarted();
     void  rosStartFailed();
 

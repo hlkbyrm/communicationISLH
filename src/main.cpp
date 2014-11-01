@@ -5,6 +5,8 @@
 #include <ros/ros.h>
 #include <QApplication>
 
+#define QT_NO_DEBUG_STREAM
+
 int main(int argc,char** argv)
 {
 
@@ -12,18 +14,18 @@ int main(int argc,char** argv)
 
     QApplication app(argc,argv);
 
-    CommunicationManager* manager = new CommunicationManager();
+    CommunicationManager manager;
 
-    RosThread* rosthread = new RosThread(manager);
+    RosThread* rosthread = new RosThread(&manager);
 
-    manager->rosthread = rosthread;
+    manager.rosthread = rosthread;
+
+
 
     QThread thr;
-    QThread thr2;
 
     rosthread->moveToThread(&thr);
 
-    manager->moveToThread(&thr2);
 
     QObject::connect(rosthread,SIGNAL(rosFinished()),&thr,SLOT(quit()));
 
@@ -33,11 +35,9 @@ int main(int argc,char** argv)
 
     QObject::connect(&thr,SIGNAL(started()),rosthread,SLOT(work()));
 
-    QObject::connect(&thr2,SIGNAL(started()),manager,SLOT(start()));
-
     thr.start();
+    manager.startt();
 
-    thr2.start();
 
     return app.exec();
 

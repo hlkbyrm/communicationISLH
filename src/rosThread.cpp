@@ -8,7 +8,14 @@ RosThread::RosThread()
 }
 RosThread::RosThread(CommunicationManager *currentmanager)
 {
+
+    robotConnectionInfoPub = n.advertise<std_msgs::String>("communicationISLH/robotConnectionInfo", queueSize);
+
+    messageInPublisher = n.advertise<ISLH_msgs::inMessage>("communicationISLH/messageIn", queueSize);
+
     manager = currentmanager;
+
+    messageOutSubscriber = n.subscribe("messageDecoderISLH/messageOut", queueSize, &CommunicationManager::handleMessageOut,this->manager);
 
 }
 
@@ -26,6 +33,7 @@ void RosThread::work(){
 
 
 
+
      QString path = QDir::homePath();
      path.append("/ISL_workspace/src/configISL.json");
 
@@ -40,13 +48,8 @@ void RosThread::work(){
      }
 
 
-     robotConnectionInfoPub = n.advertise<std_msgs::String>("communicationISLH/robotConnectionInfo", queueSize);
 
-     messageInPublisher = n.advertise<ISLH_msgs::inMessage>("communicationISLH/messageIn", queueSize);
-
-     messageOutSubscriber = n.subscribe("messageDecoderISLH/messageOut", queueSize, &CommunicationManager::handleMessageOut,this->manager);
-
-    ros::Rate loop(30);
+    ros::Rate loop(5);
 
     while(ros::ok()){
 

@@ -10,7 +10,8 @@ find_package(catkin REQUIRED COMPONENTS
   ISLH_msgs
 )
 
-SET(CMAKE_BUILD_TYPE RelWithDebInfo)
+#SET(CMAKE_BUILD_TYPE RelWithDebInfo)
+SET(CMAKE_BUILD_TYPE Debug)
 
 find_package(Qt4 REQUIRED COMPONENTS QtCore QtNetwork QtGui)
 
